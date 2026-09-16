@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Store, 
   Clock, 
@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 
 export const DashboardOverview = ({ stats, onNavigateTab }) => {
+  const [showLogsModal, setShowLogsModal] = useState(false);
+  const [showBackupModal, setShowBackupModal] = useState(false);
   return (
     <div>
       {/* Action Alerts */}
@@ -206,6 +208,16 @@ export const DashboardOverview = ({ stats, onNavigateTab }) => {
           </div>
         </div>
       </div>
+    
+      <AdminErrorLogModal
+        isOpen={showLogsModal}
+        onClose={() => setShowLogsModal(false)}
+      />
+
+      <AdminBackupModal
+        isOpen={showBackupModal}
+        onClose={() => setShowBackupModal(false)}
+      />
     </div>
   );
 };
