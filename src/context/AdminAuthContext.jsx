@@ -5,11 +5,11 @@ const AdminAuthContext = createContext(null);
 
 export const AdminAuthProvider = ({ children }) => {
   const [adminUser, setAdminUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('shopme_admin_token') || null);
+  const [token, setToken] = useState(localStorage.getItem('shopsilo_admin_token') || localStorage.getItem('shopme_admin_token') || null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('shopme_admin_user');
+    const savedUser = localStorage.getItem('shopsilo_admin_user') || localStorage.getItem('shopme_admin_user');
     if (savedUser && token) {
       try {
         const parsed = JSON.parse(savedUser);
@@ -33,16 +33,16 @@ export const AdminAuthProvider = ({ children }) => {
 
     setToken(res.access_token);
     setAdminUser(res.user);
-    localStorage.setItem('shopme_admin_token', res.access_token);
-    localStorage.setItem('shopme_admin_user', JSON.stringify(res.user));
+    localStorage.setItem('shopsilo_admin_token', res.access_token);
+    localStorage.setItem('shopsilo_admin_user', JSON.stringify(res.user));
     return res.user;
   };
 
   const logout = () => {
     setToken(null);
     setAdminUser(null);
-    localStorage.removeItem('shopme_admin_token');
-    localStorage.removeItem('shopme_admin_user');
+    localStorage.removeItem('shopsilo_admin_token'); localStorage.removeItem('shopme_admin_token');
+    localStorage.removeItem('shopsilo_admin_user'); localStorage.removeItem('shopme_admin_user');
   };
 
   return (

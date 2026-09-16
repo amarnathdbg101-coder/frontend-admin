@@ -15,7 +15,7 @@ export const AdminBackupModal = ({ isOpen, onClose }) => {
       setBackingUp(false);
       setBackupSuccess(true);
       setBackupMeta({
-        filename: `shopme_db_backup_${new Date().toISOString().slice(0, 10)}.sql.gz`,
+        filename: `shopsilo_db_backup_${new Date().toISOString().slice(0, 10)}.sql.gz`,
         size: '14.2 MB',
         tables: ['users', 'shops', 'products', 'inventory', 'reservations', 'khata_accounts', 'khata_transactions', 'categories'],
         timestamp: new Date().toLocaleString(),

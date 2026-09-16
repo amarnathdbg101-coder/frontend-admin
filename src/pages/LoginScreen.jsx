@@ -31,7 +31,7 @@ export const LoginScreen = () => {
           <div className="brand-icon" style={{ width: '48px', height: '48px', margin: '0 auto 16px' }}>
             <ShieldCheck size={28} />
           </div>
-          <h2>ShopMe Admin</h2>
+          <h2>ShopSilo Admin</h2>
           <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '4px' }}>
             Control Center & Moderation Access
           </p>
@@ -63,7 +63,7 @@ export const LoginScreen = () => {
                 type="email"
                 className="form-input"
                 style={{ paddingLeft: '40px' }}
-                placeholder="admin@shopme.com"
+                placeholder="admin@shopsilo.in"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

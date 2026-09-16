@@ -68,7 +68,7 @@ export const AdminSidebar = ({ activeTab, setActiveTab, stats, mobileOpen, onClo
           </div>
           <div className="brand-text">
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <h2>ShopMe</h2>
+              <h2>ShopSilo</h2>
               <span className="brand-badge">Admin</span>
             </div>
             <p style={{ fontSize: '0.72rem', color: '#64748b' }}>Control & Safety OS</p>

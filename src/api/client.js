@@ -14,7 +14,7 @@ const client = axios.create({
 // Request Interceptor: Attach JWT Token automatically
 client.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('shopme_admin_token');
+    const token = localStorage.getItem('shopsilo_admin_token') || localStorage.getItem('shopme_admin_token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -33,8 +33,8 @@ client.interceptors.response.use(
     const fallbackMessage = error.message || 'Something went wrong, please try again';
 
     if (error.response?.status === 401 && !error.config.url.includes('/auth/login')) {
-      localStorage.removeItem('shopme_admin_token');
-      localStorage.removeItem('shopme_admin_user');
+      localStorage.removeItem('shopsilo_admin_token'); localStorage.removeItem('shopme_admin_token');
+      localStorage.removeItem('shopsilo_admin_user'); localStorage.removeItem('shopme_admin_user');
       if (window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
