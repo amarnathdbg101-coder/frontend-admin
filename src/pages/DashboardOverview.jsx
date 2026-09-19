@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   Store, 
   Clock, 
@@ -10,12 +10,17 @@ import {
   Package,
   ArrowUpRight, 
   CheckCircle2, 
-  AlertOctagon 
+  AlertOctagon,
+  Terminal,
+  Database
 } from 'lucide-react';
+import { AdminErrorLogModal } from '../components/AdminErrorLogModal';
+import { AdminBackupModal } from '../components/AdminBackupModal';
 
 export const DashboardOverview = ({ stats, onNavigateTab }) => {
   const [showLogsModal, setShowLogsModal] = useState(false);
   const [showBackupModal, setShowBackupModal] = useState(false);
+
   return (
     <div>
       {/* Action Alerts */}
@@ -168,7 +173,7 @@ export const DashboardOverview = ({ stats, onNavigateTab }) => {
       </div>
 
       {/* Safety & Compliance Card */}
-      <div className="content-card" style={{ padding: '24px' }}>
+      <div className="content-card" style={{ padding: '24px', marginBottom: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div className="brand-icon" style={{ width: '32px', height: '32px' }}>
@@ -176,7 +181,24 @@ export const DashboardOverview = ({ stats, onNavigateTab }) => {
             </div>
             <h3 style={{ fontSize: '1.1rem' }}>Active Safety Protocols</h3>
           </div>
-          <span className="status-pill active">All Protections Live</span>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              className="btn btn-outline btn-sm"
+              onClick={() => setShowLogsModal(true)}
+              style={{ padding: '6px 12px' }}
+            >
+              <Terminal size={14} />
+              <span>System Logs</span>
+            </button>
+            <button
+              className="btn btn-outline btn-sm"
+              onClick={() => setShowBackupModal(true)}
+              style={{ padding: '6px 12px' }}
+            >
+              <Database size={14} />
+              <span>DB Snapshot</span>
+            </button>
+          </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
