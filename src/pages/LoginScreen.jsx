@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Lock, Mail, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, AlertCircle, Eye, EyeOff, KeyRound, Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
 export const LoginScreen = () => {
@@ -24,83 +24,87 @@ export const LoginScreen = () => {
     }
   };
 
+  const fillDefaultEmail = (selectedEmail) => {
+    setEmail(selectedEmail);
+  };
+
   return (
     <div className="login-screen">
+      {/* Ambient background glow effects */}
+      <div className="login-ambient-glow login-glow-1"></div>
+      <div className="login-ambient-glow login-glow-2"></div>
+
       <div className="login-box">
         <div className="login-brand">
-          <div className="brand-icon" style={{ width: '48px', height: '48px', margin: '0 auto 16px' }}>
-            <ShieldCheck size={28} />
+          <div className="brand-icon-wrapper">
+            <div className="brand-icon">
+              <ShieldCheck size={32} />
+            </div>
+          </div>
+          <div className="brand-badge">
+            <span className="live-dot"></span> SECURE CONTROL CONSOLE
           </div>
           <h2>ShopSilo Admin</h2>
-          <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '4px' }}>
-            Control Center & Moderation Access
+          <p className="login-subtitle">
+            Platform Moderation, Merchant Approvals & Ban Vault
           </p>
         </div>
 
         {error && (
-          <div style={{
-            background: 'rgba(239, 68, 68, 0.12)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            color: '#f87171',
-            borderRadius: '10px',
-            padding: '12px 16px',
-            fontSize: '0.85rem',
-            marginBottom: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-          }}>
+          <div className="login-error-alert">
             <AlertCircle size={18} style={{ flexShrink: 0 }} />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label className="form-label">Admin Email</label>
-            <div style={{ position: 'relative' }}>
+            <div className="form-label-row">
+              <label className="form-label">Admin Email</label>
+              <div className="quick-email-chips">
+                <button 
+                  type="button" 
+                  className="quick-chip"
+                  onClick={() => fillDefaultEmail('admin@shopsilo.in')}
+                  title="Auto-fill admin@shopsilo.in"
+                >
+                  admin@shopsilo.in
+                </button>
+              </div>
+            </div>
+            <div className="input-with-icon">
+              <Mail size={18} className="input-icon-left" />
               <input
                 type="email"
                 className="form-input"
-                style={{ paddingLeft: '40px' }}
                 placeholder="admin@shopsilo.in"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                autoComplete="email"
               />
-              <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
             </div>
           </div>
 
           <div className="form-group">
-            <label className="form-label">Password</label>
-            <div style={{ position: 'relative' }}>
+            <label className="form-label">Access Password</label>
+            <div className="input-with-icon">
+              <Lock size={18} className="input-icon-left" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 className="form-input"
-                style={{ paddingLeft: '40px', paddingRight: '40px' }}
-                placeholder="••••••••"
+                style={{ paddingRight: '44px' }}
+                placeholder="������������"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="current-password"
               />
-              <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: '#64748b',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: 0,
-                }}
+                className="password-toggle-btn"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -109,16 +113,33 @@ export const LoginScreen = () => {
 
           <button
             type="submit"
-            className="btn btn-primary"
-            style={{ width: '100%', justifyContent: 'center', padding: '12px', marginTop: '10px', fontSize: '0.9rem' }}
+            className="btn btn-primary btn-login"
             disabled={loading}
           >
-            {loading ? 'Authenticating...' : 'Sign In to Control Center'}
+            {loading ? (
+              <span className="btn-loading-content">
+                <span className="btn-spinner"></span>
+                <span>Authenticating Console...</span>
+              </span>
+            ) : (
+              <span className="btn-content">
+                <KeyRound size={18} />
+                <span>Sign In to Control Center</span>
+                <ArrowRight size={18} />
+              </span>
+            )}
           </button>
         </form>
 
-        <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '0.78rem', color: '#64748b' }}>
-          Restricted access. All actions and sessions are cryptographically logged.
+        <div className="login-footer-badges">
+          <div className="footer-badge">
+            <CheckCircle2 size={13} />
+            <span>256-Bit TLS Encrypted</span>
+          </div>
+          <div className="footer-badge">
+            <ShieldCheck size={13} />
+            <span>Role-Gated Access</span>
+          </div>
         </div>
       </div>
     </div>

@@ -5,29 +5,40 @@ const AdminAuthContext = createContext(null);
 
 export const AdminAuthProvider = ({ children }) => {
   const [adminUser, setAdminUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('shopsilo_admin_token') || localStorage.getItem('shopme_admin_token') || null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('shopsilo_admin_user') || localStorage.getItem('shopme_admin_user');
-    if (savedUser && token) {
+    const savedToken = localStorage.getItem('shopsilo_admin_token') || localStorage.getItem('shopme_admin_token');
+    
+    if (savedUser && savedToken) {
       try {
         const parsed = JSON.parse(savedUser);
-        if (parsed.role === 'admin') {
+        if (parsed && (parsed.role === 'admin' || parsed.role === 'superadmin')) {
           setAdminUser(parsed);
+          setToken(savedToken);
         } else {
           logout();
         }
       } catch (e) {
         logout();
       }
+    } else {
+      logout();
     }
     setLoading(false);
-  }, [token]);
+
+    const handleUnauthorized = () => {
+      logout();
+    };
+    window.addEventListener('shopsilo_admin_unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('shopsilo_admin_unauthorized', handleUnauthorized);
+  }, []);
 
   const login = async (email, password) => {
     const res = await adminApi.login(email, password);
-    if (res.user?.role !== 'admin') {
+    if (!res.user || (res.user.role !== 'admin' && res.user.role !== 'superadmin')) {
       throw new Error('Access denied: Only users with Administrator role can access this console.');
     }
 
@@ -41,8 +52,10 @@ export const AdminAuthProvider = ({ children }) => {
   const logout = () => {
     setToken(null);
     setAdminUser(null);
-    localStorage.removeItem('shopsilo_admin_token'); localStorage.removeItem('shopme_admin_token');
-    localStorage.removeItem('shopsilo_admin_user'); localStorage.removeItem('shopme_admin_user');
+    localStorage.removeItem('shopsilo_admin_token');
+    localStorage.removeItem('shopme_admin_token');
+    localStorage.removeItem('shopsilo_admin_user');
+    localStorage.removeItem('shopme_admin_user');
   };
 
   return (

@@ -32,12 +32,12 @@ client.interceptors.response.use(
     const backendMessage = error.response?.data?.error || error.response?.data?.message;
     const fallbackMessage = error.message || 'Something went wrong, please try again';
 
-    if (error.response?.status === 401 && !error.config.url.includes('/auth/login')) {
-      localStorage.removeItem('shopsilo_admin_token'); localStorage.removeItem('shopme_admin_token');
-      localStorage.removeItem('shopsilo_admin_user'); localStorage.removeItem('shopme_admin_user');
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
+    if (error.response?.status === 401 && !error.config?.url?.includes('/auth/login')) {
+      localStorage.removeItem('shopsilo_admin_token');
+      localStorage.removeItem('shopme_admin_token');
+      localStorage.removeItem('shopsilo_admin_user');
+      localStorage.removeItem('shopme_admin_user');
+      window.dispatchEvent(new Event('shopsilo_admin_unauthorized'));
     }
 
     return Promise.reject(new Error(backendMessage || fallbackMessage));
