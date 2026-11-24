@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   Package, 
   Search, 
-  Plus, 
-  UploadCloud, 
   RotateCcw, 
   Trash2, 
   ShieldCheck, 
@@ -20,7 +18,6 @@ import {
 } from 'lucide-react';
 import { adminApi } from '../api/admin.api';
 import { MasterProductModal } from '../components/MasterProductModal';
-import { BulkSeedModal } from '../components/BulkSeedModal';
 
 export const MasterCatalogDesk = ({ onRefreshStats }) => {
   const [activeTab, setActiveTab] = useState('catalog'); // 'catalog' | 'soft_deleted'
@@ -48,7 +45,6 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
   // Modals
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [bulkSeedModalOpen, setBulkSeedModalOpen] = useState(false);
 
   // Confirmation Modals
   const [hardDeleteTarget, setHardDeleteTarget] = useState(null);
@@ -119,16 +115,14 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
     }
   }, [activeTab, page, search, selectedCategory, selectedBrand, verifiedFilter]);
 
-  // Handle Save (Add/Edit)
+  // Handle Save (Edit existing master product)
   const handleSaveProduct = async (payload, existingId) => {
     if (existingId) {
       await adminApi.updateMasterProduct(existingId, payload);
-    } else {
-      await adminApi.createMasterProduct(payload);
+      fetchMasterProducts();
+      fetchStats();
+      if (onRefreshStats) onRefreshStats();
     }
-    fetchMasterProducts();
-    fetchStats();
-    if (onRefreshStats) onRefreshStats();
   };
 
   // Handle Delete from Master Catalog
@@ -258,34 +252,13 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '8px' }}>
-          {activeTab === 'catalog' && (
-            <>
-              <button
-                className="btn btn-outline btn-sm"
-                onClick={() => setBulkSeedModalOpen(true)}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#34d399', borderColor: 'rgba(16, 185, 129, 0.3)' }}
-              >
-                <UploadCloud size={15} />
-                <span>Bulk Seed Lakhs of Products</span>
-              </button>
-
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={() => { setEditingProduct(null); setProductModalOpen(true); }}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-              >
-                <Plus size={15} />
-                <span>Add Master Product</span>
-              </button>
-            </>
-          )}
-
           <button
             className="btn btn-outline btn-sm"
             onClick={activeTab === 'catalog' ? fetchMasterProducts : fetchSoftDeleted}
             title="Refresh Table"
           >
             <RefreshCw size={14} className={loading || softLoading ? 'spin' : ''} />
+            <span style={{ marginLeft: '4px' }}>Refresh</span>
           </button>
         </div>
       </div>
@@ -377,7 +350,7 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
                       <Package size={36} style={{ margin: '0 auto 10px', color: '#334155' }} />
                       <div style={{ fontWeight: 600, color: '#94a3b8' }}>No Master Products Found</div>
                       <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>
-                        Use "Bulk Seed" or "Add Master Product" to start building your internal database.
+                        Products added by merchant accounts in the app will automatically synchronize here in the master catalog.
                       </div>
                     </td>
                   </tr>
@@ -704,22 +677,12 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
         </div>
       )}
 
-      {/* Product Add/Edit Modal */}
+      {/* Product Edit Modal */}
       <MasterProductModal
         isOpen={productModalOpen}
         product={editingProduct}
         onClose={() => setProductModalOpen(false)}
         onSave={handleSaveProduct}
-      />
-
-      {/* Bulk Seeding Modal */}
-      <BulkSeedModal
-        isOpen={bulkSeedModalOpen}
-        onClose={() => setBulkSeedModalOpen(false)}
-        onSuccess={() => {
-          fetchMasterProducts();
-          fetchStats();
-        }}
       />
 
       {/* Permanent Hard-Delete Confirmation Modal */}

@@ -57,7 +57,7 @@ export const MasterProductModal = ({ product, isOpen, onClose, onSave }) => {
     setError('');
   }, [product, isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !product?.id) return null;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -123,10 +123,10 @@ export const MasterProductModal = ({ product, isOpen, onClose, onSave }) => {
             </div>
             <div>
               <h3 style={{ fontSize: '1.15rem' }}>
-                {isEdit ? 'Edit Master Product' : 'Add Master Product to Global Catalog'}
+                Edit Master Product
               </h3>
               <p style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
-                Instant auto-fill data for store onboarding
+                Curate verified catalog details for merchant auto-fill
               </p>
             </div>
           </div>
@@ -368,7 +368,7 @@ export const MasterProductModal = ({ product, isOpen, onClose, onSave }) => {
               Cancel
             </button>
             <button type="submit" className="btn btn-primary" disabled={submitting}>
-              {submitting ? 'Saving...' : isEdit ? 'Update Master Product' : 'Add to Master Catalog'}
+              {submitting ? 'Saving...' : 'Update Master Product'}
             </button>
           </div>
         </form>
