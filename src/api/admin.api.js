@@ -1,27 +1,32 @@
 import client from './client';
 
+const unwrap = (res) => {
+  if (res && res.data !== undefined) return res.data;
+  return res;
+};
+
 export const adminApi = {
   // Auth
   login: async (email, password) => {
     const res = await client.post('/auth/login', { email, password });
-    return res.data; // { access_token, user }
+    return unwrap(res); // { access_token, user }
   },
 
   // Dashboard Metrics
   getStats: async () => {
     const res = await client.get('/admin/stats');
-    return res.data;
+    return unwrap(res);
   },
 
   // Shop Management
   getShops: async (params = {}) => {
     const res = await client.get('/admin/shops', { params });
-    return res.data; // { shops: [], total: number }
+    return unwrap(res); // { shops: [], total: number }
   },
 
   updateShopStatus: async (shopId, status, reason = '') => {
     const res = await client.patch(`/admin/shops/${shopId}/status`, { status, reason });
-    return res.data;
+    return unwrap(res);
   },
 
   banShop: async (shopId, { reason, blacklist_ip = true, blacklist_device = true, blacklist_images = true }) => {
@@ -31,13 +36,13 @@ export const adminApi = {
       blacklist_device,
       blacklist_images,
     });
-    return res.data;
+    return unwrap(res);
   },
 
   // Reports & Grievance Desk
   getReports: async (params = {}) => {
     const res = await client.get('/admin/reports', { params });
-    return res.data;
+    return unwrap(res);
   },
 
   resolveReport: async (reportId, status, actionTaken) => {
@@ -45,13 +50,13 @@ export const adminApi = {
       status,
       action_taken: actionTaken,
     });
-    return res.data;
+    return unwrap(res);
   },
 
   // Blacklist & Ban Evasion
   getBannedEntities: async (params = {}) => {
     const res = await client.get('/admin/banned-entities', { params });
-    return res.data;
+    return unwrap(res);
   },
 
   addBannedEntity: async ({ entity_type, entity_value, reason }) => {
@@ -60,86 +65,117 @@ export const adminApi = {
       entity_value,
       reason,
     });
-    return res.data;
+    return unwrap(res);
+  },
+
+  unbanEntity: async (id) => {
+    const res = await client.delete(`/admin/banned-entities/${id}`);
+    return unwrap(res);
   },
 
   // Categories Management
   getCategories: async () => {
     const res = await client.get('/admin/categories');
-    return res.data; // array of categories
+    return unwrap(res); // array of categories
   },
 
   createCategory: async (payload) => {
     const res = await client.post('/admin/categories', payload);
-    return res.data;
+    return unwrap(res);
   },
 
   updateCategory: async (id, payload) => {
     const res = await client.put(`/admin/categories/${id}`, payload);
-    return res.data;
+    return unwrap(res);
   },
 
   deleteCategory: async (id) => {
     const res = await client.delete(`/admin/categories/${id}`);
-    return res.data;
+    return unwrap(res);
   },
 
   // User & Merchant Directory
   getUsers: async (params = {}) => {
     const res = await client.get('/admin/users', { params });
-    return res.data; // { users: [], total: number }
+    return unwrap(res); // { users: [], total: number }
   },
 
   updateUserStatus: async (userId, { is_active, role }) => {
     const res = await client.patch(`/admin/users/${userId}/status`, { is_active, role });
-    return res.data;
+    return unwrap(res);
   },
 
   // Master Catalog & High-Speed Seeding Engine
   getMasterProducts: async (params = {}) => {
     const res = await client.get('/admin/catalog/products', { params });
-    return res.data !== undefined ? res.data : res;
+    return unwrap(res);
   },
 
   createMasterProduct: async (payload) => {
     const res = await client.post('/admin/catalog/products', payload);
-    return res.data !== undefined ? res.data : res;
+    return unwrap(res);
   },
 
   updateMasterProduct: async (id, payload) => {
     const res = await client.put(`/admin/catalog/products/${id}`, payload);
-    return res.data !== undefined ? res.data : res;
+    return unwrap(res);
   },
 
   deleteMasterProduct: async (id) => {
     const res = await client.delete(`/admin/catalog/products/${id}`);
-    return res.data !== undefined ? res.data : res;
+    return unwrap(res);
   },
 
   getMasterCatalogStats: async () => {
     const res = await client.get('/admin/catalog/stats');
-    return res.data !== undefined ? res.data : res;
+    return unwrap(res);
   },
 
   bulkSeedMasterCatalog: async (products) => {
     const res = await client.post('/admin/catalog/bulk-seed', { products });
-    return res.data !== undefined ? res.data : res;
+    return unwrap(res);
   },
 
   // Soft-Delete vs Hard-Delete Governance
   getSoftDeletedProducts: async (params = {}) => {
     const res = await client.get('/admin/products/soft-deleted', { params });
-    return res.data !== undefined ? res.data : res;
+    return unwrap(res);
   },
 
   restoreProduct: async (id) => {
     const res = await client.post(`/admin/products/${id}/restore`);
-    return res.data !== undefined ? res.data : res;
+    return unwrap(res);
   },
 
   hardDeleteProduct: async (id) => {
     const res = await client.delete(`/admin/products/${id}`);
-    return res.data !== undefined ? res.data : res;
+    return unwrap(res);
+  },
+
+  // System Error Telemetry & Live Performance Metrics
+  getErrors: async () => {
+    const res = await client.get('/admin/errors');
+    return unwrap(res);
+  },
+
+  clearErrors: async () => {
+    const res = await client.delete('/admin/errors/clear');
+    return unwrap(res);
+  },
+
+  getPerformanceMetrics: async () => {
+    const res = await client.get('/admin/performance-metrics');
+    return unwrap(res);
+  },
+
+  // Database Backups & Snapshots
+  triggerBackup: async () => {
+    const res = await client.post('/admin/backup/trigger');
+    return unwrap(res);
+  },
+
+  getBackups: async () => {
+    const res = await client.get('/admin/backups');
+    return unwrap(res);
   },
 };
-

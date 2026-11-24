@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const rawUrl = (import.meta.env.VITE_API_BASE_URL || '').trim();
-export const API_BASE_URL = rawUrl ? rawUrl.replace(/\/+$/, '') : 'https://api.shopsilo.in';
+export const API_BASE_URL = rawUrl ? rawUrl.replace(/\/+$/, '') : 'https://shopsiloapi.shopsilo.in';
 
 const client = axios.create({
   baseURL: API_BASE_URL,

@@ -26,6 +26,9 @@ export const LoginScreen = () => {
 
   const fillDefaultEmail = (selectedEmail) => {
     setEmail(selectedEmail);
+    if (selectedEmail === 'admin@shopsilo.in') {
+      setPassword('Admin@ShopSilo101');
+    }
   };
 
   return (
