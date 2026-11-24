@@ -6,6 +6,7 @@ import { DashboardOverview } from './pages/DashboardOverview';
 import { ShopManagement } from './pages/ShopManagement';
 import { CategoryManagement } from './pages/CategoryManagement';
 import { UserManagement } from './pages/UserManagement';
+import { MasterCatalogDesk } from './pages/MasterCatalogDesk';
 import { ReportsDesk } from './pages/ReportsDesk';
 import { BlacklistVault } from './pages/BlacklistVault';
 import { adminApi } from './api/admin.api';
@@ -69,6 +70,7 @@ export const AppContent = () => {
     switch (activeTab) {
       case 'dashboard': return 'Command Center Overview';
       case 'shops': return 'Shop Approvals & Moderation';
+      case 'catalog': return 'Universal Master Catalog & SKU Seeding Desk';
       case 'categories': return 'Product Categories Management';
       case 'users': return 'Registered Users & Merchants';
       case 'reports': return 'IT Rules 2021 Grievance Desk';
@@ -136,6 +138,10 @@ export const AppContent = () => {
 
           {activeTab === 'shops' && (
             <ShopManagement initialFilter={shopFilter} onRefreshStats={fetchStats} />
+          )}
+
+          {activeTab === 'catalog' && (
+            <MasterCatalogDesk onRefreshStats={fetchStats} />
           )}
 
           {activeTab === 'categories' && (

@@ -160,15 +160,15 @@ export const DashboardOverview = ({ stats, onNavigateTab }) => {
           <div className="metric-subtitle">Global Product Categories</div>
         </div>
 
-        <div className="metric-card">
+        <div className="metric-card primary" onClick={() => onNavigateTab('catalog')} style={{ cursor: 'pointer' }}>
           <div className="metric-top">
-            <span className="metric-title">Live Products</span>
-            <div className="metric-icon-wrap" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+            <span className="metric-title">Master Catalog & SKUs</span>
+            <div className="metric-icon-wrap" style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8' }}>
               <Package size={20} />
             </div>
           </div>
-          <div className="metric-value">{stats?.total_products || 0}</div>
-          <div className="metric-subtitle">Merchant Catalog Inventory</div>
+          <div className="metric-value">{stats?.total_master_products || stats?.total_products || 0}</div>
+          <div className="metric-subtitle">1-Tap SKU Auto-Fill Catalog</div>
         </div>
       </div>
 

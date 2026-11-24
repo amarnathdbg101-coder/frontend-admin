@@ -94,5 +94,52 @@ export const adminApi = {
     const res = await client.patch(`/admin/users/${userId}/status`, { is_active, role });
     return res.data;
   },
+
+  // Master Catalog & High-Speed Seeding Engine
+  getMasterProducts: async (params = {}) => {
+    const res = await client.get('/admin/catalog/products', { params });
+    return res.data !== undefined ? res.data : res;
+  },
+
+  createMasterProduct: async (payload) => {
+    const res = await client.post('/admin/catalog/products', payload);
+    return res.data !== undefined ? res.data : res;
+  },
+
+  updateMasterProduct: async (id, payload) => {
+    const res = await client.put(`/admin/catalog/products/${id}`, payload);
+    return res.data !== undefined ? res.data : res;
+  },
+
+  deleteMasterProduct: async (id) => {
+    const res = await client.delete(`/admin/catalog/products/${id}`);
+    return res.data !== undefined ? res.data : res;
+  },
+
+  getMasterCatalogStats: async () => {
+    const res = await client.get('/admin/catalog/stats');
+    return res.data !== undefined ? res.data : res;
+  },
+
+  bulkSeedMasterCatalog: async (products) => {
+    const res = await client.post('/admin/catalog/bulk-seed', { products });
+    return res.data !== undefined ? res.data : res;
+  },
+
+  // Soft-Delete vs Hard-Delete Governance
+  getSoftDeletedProducts: async (params = {}) => {
+    const res = await client.get('/admin/products/soft-deleted', { params });
+    return res.data !== undefined ? res.data : res;
+  },
+
+  restoreProduct: async (id) => {
+    const res = await client.post(`/admin/products/${id}/restore`);
+    return res.data !== undefined ? res.data : res;
+  },
+
+  hardDeleteProduct: async (id) => {
+    const res = await client.delete(`/admin/products/${id}`);
+    return res.data !== undefined ? res.data : res;
+  },
 };
 

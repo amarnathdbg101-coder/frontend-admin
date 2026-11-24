@@ -7,6 +7,7 @@ import {
   LayoutDashboard, 
   FolderTree, 
   Users, 
+  PackageCheck,
   LogOut,
   X
 } from 'lucide-react';
@@ -22,6 +23,13 @@ export const AdminSidebar = ({ activeTab, setActiveTab, stats, mobileOpen, onClo
       label: 'Shop Approvals', 
       icon: Store, 
       badge: (stats?.pending_shops || 0) + (stats?.flagged_shops || 0) 
+    },
+    { 
+      id: 'catalog', 
+      label: 'Master Catalog', 
+      icon: PackageCheck, 
+      badge: stats?.total_products || 0,
+      badgeColor: 'neutral'
     },
     { 
       id: 'categories', 
