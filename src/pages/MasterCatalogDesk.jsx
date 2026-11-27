@@ -50,6 +50,10 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
   const [hardDeleteTarget, setHardDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Bulk Selection State
+  const [selectedMasterIds, setSelectedMasterIds] = useState([]);
+  const [selectedSoftIds, setSelectedSoftIds] = useState([]);
+
   // Fetch Master Catalog Stats
   const fetchStats = async () => {
     try {
@@ -132,10 +136,76 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
     }
     try {
       await adminApi.deleteMasterProduct(id);
+      setSelectedMasterIds((prev) => prev.filter((x) => x !== id));
       fetchMasterProducts();
       fetchStats();
     } catch (err) {
       alert('Failed to delete: ' + err.message);
+    }
+  };
+
+  // Handle Batch Delete Selected Master Products
+  const handleBatchDeleteMaster = async () => {
+    if (selectedMasterIds.length === 0) return;
+    if (!window.confirm(`Delete ${selectedMasterIds.length} selected product(s) from the master catalog? They can be added again later.`)) {
+      return;
+    }
+    try {
+      await adminApi.batchDeleteMasterProducts(selectedMasterIds);
+      setSelectedMasterIds([]);
+      fetchMasterProducts();
+      fetchStats();
+    } catch (err) {
+      alert('Failed to batch delete: ' + err.message);
+    }
+  };
+
+  // Handle Delete All Master Products
+  const handleDeleteAllMaster = async () => {
+    if (totalProducts === 0) return;
+    if (!window.confirm(`Delete ALL ${totalProducts} product(s) from the master catalog? They can be added again later.`)) {
+      return;
+    }
+    try {
+      await adminApi.deleteAllMasterProducts();
+      setSelectedMasterIds([]);
+      setPage(0);
+      fetchMasterProducts();
+      fetchStats();
+    } catch (err) {
+      alert('Failed to delete all: ' + err.message);
+    }
+  };
+
+  // Handle Batch Hard-Delete Selected Soft-Deleted Products
+  const handleBatchHardDelete = async () => {
+    if (selectedSoftIds.length === 0) return;
+    if (!window.confirm(`Permanently delete ${selectedSoftIds.length} selected product(s)? Merchants can add them again later.`)) {
+      return;
+    }
+    try {
+      await adminApi.batchHardDeleteProducts(selectedSoftIds);
+      setSelectedSoftIds([]);
+      fetchSoftDeleted();
+      fetchStats();
+    } catch (err) {
+      alert('Failed to batch hard-delete: ' + err.message);
+    }
+  };
+
+  // Handle Hard-Delete All Soft-Deleted Products
+  const handleHardDeleteAllSoft = async () => {
+    if (softDeletedTotal === 0 && softDeleted.length === 0) return;
+    if (!window.confirm(`Permanently delete ALL ${softDeletedTotal || softDeleted.length} soft-deleted product(s)? Merchants can add them again later.`)) {
+      return;
+    }
+    try {
+      await adminApi.hardDeleteAllSoftDeletedProducts();
+      setSelectedSoftIds([]);
+      fetchSoftDeleted();
+      fetchStats();
+    } catch (err) {
+      alert('Failed to delete all: ' + err.message);
     }
   };
 
@@ -251,7 +321,47 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
           </button>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {activeTab === 'catalog' && selectedMasterIds.length > 0 && (
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={handleBatchDeleteMaster}
+              style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+            >
+              <Trash2 size={14} />
+              <span>Delete Selected ({selectedMasterIds.length})</span>
+            </button>
+          )}
+          {activeTab === 'catalog' && totalProducts > 0 && (
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={handleDeleteAllMaster}
+              style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+            >
+              <Trash2 size={14} />
+              <span>Delete All ({totalProducts})</span>
+            </button>
+          )}
+          {activeTab === 'soft_deleted' && selectedSoftIds.length > 0 && (
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={handleBatchHardDelete}
+              style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+            >
+              <Trash2 size={14} />
+              <span>Delete Selected ({selectedSoftIds.length})</span>
+            </button>
+          )}
+          {activeTab === 'soft_deleted' && (softDeletedTotal > 0 || softDeleted.length > 0) && (
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={handleHardDeleteAllSoft}
+              style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+            >
+              <Trash2 size={14} />
+              <span>Delete All ({softDeletedTotal || softDeleted.length})</span>
+            </button>
+          )}
           <button
             className="btn btn-outline btn-sm"
             onClick={activeTab === 'catalog' ? fetchMasterProducts : fetchSoftDeleted}
@@ -324,6 +434,20 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
             <table className="admin-table">
               <thead>
                 <tr>
+                  <th style={{ width: '36px' }}>
+                    <input
+                      type="checkbox"
+                      checked={products.length > 0 && products.every((p) => selectedMasterIds.includes(p.id))}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedMasterIds(products.map((p) => p.id));
+                        } else {
+                          setSelectedMasterIds([]);
+                        }
+                      }}
+                      title="Select all on page"
+                    />
+                  </th>
                   <th style={{ width: '60px' }}>Image</th>
                   <th>Product Title & Pack</th>
                   <th>Barcode / SKU</th>
@@ -357,6 +481,19 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
                 ) : (
                   products.map((p) => (
                     <tr key={p.id}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedMasterIds.includes(p.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedMasterIds((prev) => [...prev, p.id]);
+                            } else {
+                              setSelectedMasterIds((prev) => prev.filter((id) => id !== p.id));
+                            }
+                          }}
+                        />
+                      </td>
                       <td>
                         <div style={{
                           width: '42px',
@@ -570,6 +707,20 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
             <table className="admin-table">
               <thead>
                 <tr>
+                  <th style={{ width: '36px' }}>
+                    <input
+                      type="checkbox"
+                      checked={softDeleted.length > 0 && softDeleted.every((item) => selectedSoftIds.includes(item.id))}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedSoftIds(softDeleted.map((item) => item.id));
+                        } else {
+                          setSelectedSoftIds([]);
+                        }
+                      }}
+                      title="Select all on page"
+                    />
+                  </th>
                   <th>Store / Merchant</th>
                   <th>Product Name</th>
                   <th>Barcode / SKU</th>
@@ -601,6 +752,19 @@ export const MasterCatalogDesk = ({ onRefreshStats }) => {
                 ) : (
                   softDeleted.map((item) => (
                     <tr key={item.id}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedSoftIds.includes(item.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedSoftIds((prev) => [...prev, item.id]);
+                            } else {
+                              setSelectedSoftIds((prev) => prev.filter((id) => id !== item.id));
+                            }
+                          }}
+                        />
+                      </td>
                       <td>
                         <div style={{ fontWeight: 600, color: '#f8fafc' }}>
                           {item.shop_name}

@@ -105,6 +105,11 @@ export const adminApi = {
     return unwrap(res);
   },
 
+  deleteUser: async (userId) => {
+    const res = await client.delete(`/admin/users/${userId}`);
+    return unwrap(res);
+  },
+
   // Master Catalog & High-Speed Seeding Engine
   getMasterProducts: async (params = {}) => {
     const res = await client.get('/admin/catalog/products', { params });
@@ -123,6 +128,16 @@ export const adminApi = {
 
   deleteMasterProduct: async (id) => {
     const res = await client.delete(`/admin/catalog/products/${id}`);
+    return unwrap(res);
+  },
+
+  batchDeleteMasterProducts: async (ids) => {
+    const res = await client.post('/admin/catalog/products/batch', { ids });
+    return unwrap(res);
+  },
+
+  deleteAllMasterProducts: async () => {
+    const res = await client.delete('/admin/catalog/products/all');
     return unwrap(res);
   },
 
@@ -149,6 +164,16 @@ export const adminApi = {
 
   hardDeleteProduct: async (id) => {
     const res = await client.delete(`/admin/products/${id}`);
+    return unwrap(res);
+  },
+
+  batchHardDeleteProducts: async (ids) => {
+    const res = await client.post('/admin/products/batch', { ids });
+    return unwrap(res);
+  },
+
+  hardDeleteAllSoftDeletedProducts: async () => {
+    const res = await client.delete('/admin/products/all');
     return unwrap(res);
   },
 

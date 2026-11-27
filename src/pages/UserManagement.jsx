@@ -12,7 +12,8 @@ import {
   Edit3, 
   CheckCircle2, 
   XCircle,
-  X
+  X,
+  Trash2
 } from 'lucide-react';
 import { adminApi } from '../api/admin.api';
 
@@ -64,6 +65,20 @@ export const UserManagement = ({ onRefreshStats }) => {
       await adminApi.updateUserStatus(user.id, {
         is_active: !user.is_active,
       });
+      await fetchUsers();
+      if (onRefreshStats) onRefreshStats();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleDeleteUser = async (user) => {
+    if (!window.confirm(`Remove account for ${user.full_name || user.email}?\n\nThis will delete their account and shop data, and they will be able to register a fresh account later.`)) {
+      return;
+    }
+
+    try {
+      await adminApi.deleteUser(user.id);
       await fetchUsers();
       if (onRefreshStats) onRefreshStats();
     } catch (err) {
@@ -239,6 +254,14 @@ export const UserManagement = ({ onRefreshStats }) => {
                               <UserCheck size={14} /> Activate
                             </>
                           )}
+                        </button>
+
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDeleteUser(u)}
+                          title="Remove Account (User can recreate later)"
+                        >
+                          <Trash2 size={14} /> Remove
                         </button>
                       </div>
                     </td>
